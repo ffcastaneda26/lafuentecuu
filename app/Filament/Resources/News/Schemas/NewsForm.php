@@ -10,6 +10,7 @@ use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Group;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Str;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
@@ -55,12 +56,32 @@ class NewsForm
                         ]),
                     Select::make('status')
                         ->label('Estado')
-                        ->options(NewStatusEnum::class)
+                        ->options([
+                            'borrador' => 'Borrador',
+                            'publicada' => 'Publicada',
+                            'archivada' => 'Archivada',
+                        ])
                         ->required()
-                        ->default(NewStatusEnum::BORRADOR->value)
-                        ->native(false),
+                        ->default('borrador')
+                        ->native(false)
+                        ->live(debounce: 0), // Sin retraso
+                    //    logger('No es un arreglo:');
+                    //    logger('Devuelve:', [$status === NewStatusEnum::PUBLICADA->value]);
                     DateTimePicker::make('published_at')
-                        ->label('Publicada el'),
+                        ->label('Publicada el')
+                        ->visible(function (Get $get) {
+                            $status = $get('status');
+
+                            return $status === NewStatusEnum::PUBLICADA->value;
+                        })
+                        ->required(function (Get $get) {
+                            $status = $get('status');
+
+                            return $status === NewStatusEnum::PUBLICADA->value;
+                        })
+                        ->validationMessages([
+                            'required' => 'La fecha de publicación es obligatoria cuando la noticia es Publicada.',
+                        ]),
                 ]),
                 Group::make()->schema([
                     Select::make('category_id')
@@ -70,9 +91,9 @@ class NewsForm
                     FileUpload::make('featured_image')
                         ->label('Imagen Destacada')
                         ->image()
-                        ->imageEditor()
-                        ->imageEditorViewportWidth('1200')
-                        ->imageEditorViewportHeight('800')
+                        // ->imageEditor()
+                        // ->imageEditorViewportWidth('1200')
+                        // ->imageEditorViewportHeight('800')
                         ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/jpg'])
                         ->disk('public') // ✅ Disco público
                         ->directory('news') // ✅ Subdirectorio específico

@@ -10,6 +10,7 @@ class ContactInfo extends Model
     use HasFactory;
 
     protected $fillable = [
+        'name',
         'phone',
         'email',
         'address',
@@ -18,5 +19,6 @@ class ContactInfo extends Model
         'social_tiktok',
         'social_twitter',
         'about_text',
+        'logo',
     ];
 }

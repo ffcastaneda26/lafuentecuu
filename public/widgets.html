@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Widgets Dashboard</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        />
+    </head>
+
+    <body class="bg-gray-100 p-4">
+        <div class="flex flex-wrap items-center gap-4 md:gap-6">
+            <!-- Widget: Fecha y Hora -->
+            <div
+                class="flex items-center gap-2 bg-white px-4 py-2 rounded-lg shadow-sm"
+            >
+                <i class="fas fa-calendar-alt text-blue-600"></i>
+                <div class="flex flex-col">
+                    <span
+                        id="fecha"
+                        class="text-xs font-semibold text-gray-700"
+                    ></span>
+                    <span
+                        id="hora"
+                        class="text-sm font-bold text-gray-900"
+                    ></span>
+                </div>
+            </div>
+
+            <!-- Widget: Temperatura -->
+            <div
+                class="flex items-center gap-2 bg-white px-4 py-2 rounded-lg shadow-sm"
+            >
+                <i class="fas fa-temperature-high text-orange-500"></i>
+                <div class="flex flex-col">
+                    <span class="text-xs text-gray-600">Ciudad Juárez</span>
+                    <span
+                        id="temperatura"
+                        class="text-sm font-bold text-gray-900"
+                    >
+                        <i class="fas fa-spinner fa-spin text-gray-400"></i>
+                    </span>
+                </div>
+            </div>
+
+            <!-- Widget: Tipo de Cambio USD/MXN -->
+            <div
+                class="flex items-center gap-2 bg-white px-4 py-2 rounded-lg shadow-sm"
+            >
+                <i class="fas fa-dollar-sign text-green-600"></i>
+                <div class="flex flex-col">
+                    <span class="text-xs text-gray-600">USD/MXN</span>
+                    <span
+                        id="tipoCambio"
+                        class="text-sm font-bold text-gray-900"
+                    >
+                        <i class="fas fa-spinner fa-spin text-gray-400"></i>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // ===== FECHA Y HORA =====
+            function actualizarFechaHora() {
+                const ahora = new Date();
+                const opciones = {
+                    weekday: "long",
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                };
+                const fecha = ahora.toLocaleDateString("es-MX", opciones);
+                const hora = ahora.toLocaleTimeString("es-MX", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    second: "2-digit",
+                });
+
+                document.getElementById("fecha").textContent =
+                    fecha.charAt(0).toUpperCase() + fecha.slice(1);
+                document.getElementById("hora").textContent = hora;
+            }
+
+            actualizarFechaHora();
+            setInterval(actualizarFechaHora, 1000);
+
+            // ===== TEMPERATURA =====
+            async function obtenerTemperatura() {
+                try {
+                    // Usando OpenWeatherMap API gratuita
+                    // Coordenadas de Ciudad Juárez: 31.6904, -106.4245
+                    const apiKey = "TU_API_KEY"; // Necesitas registrarte en openweathermap.org
+                    const lat = 31.6904;
+                    const lon = -106.4245;
+
+                    // Alternativa: usando wttr.in (no requiere API key)
+                    const response = await fetch(
+                        `https://wttr.in/Ciudad_Juarez?format=j1`
+                    );
+                    const data = await response.json();
+
+                    const tempC = data.current_condition[0].temp_C;
+                    const descripcion =
+                        data.current_condition[0].lang_es?.[0]?.value ||
+                        data.current_condition[0].weatherDesc[0].value;
+
+                    document.getElementById("temperatura").innerHTML = `
+                    <span class="font-bold">${tempC}°C</span>
+                    <span class="text-xs text-gray-500 ml-1">${descripcion}</span>
+                `;
+                } catch (error) {
+                    console.error("Error al obtener temperatura:", error);
+                    document.getElementById("temperatura").innerHTML =
+                        '<span class="text-xs text-red-500">No disponible</span>';
+                }
+            }
+
+            obtenerTemperatura();
+            setInterval(obtenerTemperatura, 600000); // Actualizar cada 10 minutos
+
+            // ===== TIPO DE CAMBIO =====
+            async function obtenerTipoCambio() {
+                try {
+                    // Usando API de Banxico (gratis, no requiere key para consultas simples)
+                    const response = await fetch(
+                        "https://www.banxico.org.mx/SieAPIRest/service/v1/series/SF43718/datos/oportuno",
+                        {
+                            headers: {
+                                "Bmx-Token": "TU_TOKEN_BANXICO", // Opcional: registrarse en banxico.org.mx
+                            },
+                        }
+                    );
+
+                    // Alternativa: exchangerate-api.com (gratis hasta 1500 requests/mes)
+                    const responseAlt = await fetch(
+                        "https://api.exchangerate-api.com/v4/latest/USD"
+                    );
+                    const data = await responseAlt.json();
+
+                    const tipoCambio = data.rates.MXN.toFixed(2);
+
+                    document.getElementById("tipoCambio").innerHTML = `
+                    <span class="font-bold">$${tipoCambio}</span>
+                    <span class="text-xs text-gray-500 ml-1">MXN</span>
+                `;
+                } catch (error) {
+                    console.error("Error al obtener tipo de cambio:", error);
+                    document.getElementById("tipoCambio").innerHTML =
+                        '<span class="text-xs text-red-500">No disponible</span>';
+                }
+            }
+
+            obtenerTipoCambio();
+            setInterval(obtenerTipoCambio, 3600000); // Actualizar cada hora
+        </script>
+    </body>
+</html>

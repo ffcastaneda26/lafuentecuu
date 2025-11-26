@@ -27,14 +27,14 @@
 
                     <div class="flex items-center gap-6">
                         <div class="flex items-center gap-3">
-                            <p> Widgets </p>
-                            <!-- Redes Sociales y Ubicación -->
+                            <div class="flex items-center gap-2 bg-white px-4 py-2 rounded-lg shadow-sm">
+                                <i class="fas fa-calendar-alt text-blue-600"></i>
+                                <div class="flex flex-col">
+                                    <span id="fecha" class="text-xs font-semibold text-gray-700"></span>
+                                    <span id="hora" class="text-sm font-bold text-gray-900"></span>
+                                </div>
+                            </div>
 
-                            {{-- @include('partials.socials') --}}
-                            {{-- Ubicación --}}
-                            {{-- <div class="hidden md:flex items-center gap-2 text-gray-700">
-                                @include('partials.ubication')
-                            </div> --}}
                         </div>
                     </div>
 
@@ -136,15 +136,32 @@
 
     @stack('scripts')
     <script src="{{ asset('js/category_nav_responsive.js') }}"></script>
-    {{-- <script>
-        // Toggle del menú mobile
-        document.getElementById('mobile-menu-button').addEventListener('click', function() {
-            const menu = document.getElementById('mobile-menu');
-            const icon = this.querySelector('i');
+    <script>
+        // ===== FECHA Y HORA =====
+        function actualizarFechaHora() {
+            const ahora = new Date();
+            const opciones = {
+                weekday: "long",
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+            };
+            const fecha = ahora.toLocaleDateString("es-MX", opciones);
+            const hora = ahora.toLocaleTimeString("es-MX", {
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+            });
 
-            menu.classList.toggle('hidden');
-            icon.classList.toggle('fa-bars');
-            icon.classList.toggle('fa-times');
-        });
-    </script> --}} < /body>
-        < / html>
+            document.getElementById("fecha").textContent =
+                fecha.charAt(0).toUpperCase() + fecha.slice(1);
+            document.getElementById("hora").textContent = hora;
+        }
+
+        actualizarFechaHora();
+        setInterval(actualizarFechaHora, 1000);
+    </script>
+
+</body>
+
+</html>

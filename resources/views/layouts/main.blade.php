@@ -25,37 +25,12 @@
                         </a>
                     </div>
 
-                    <!-- Fecha y hora -->
+                    <!-- Widget a la derecha -->
                     <div class="flex items-center gap-6">
                         <div class="flex items-center gap-3">
-                            <div class="flex items-center gap-2 bg-white px-4 py-2 rounded-lg shadow-sm">
-                                <i class="fas fa-calendar-alt text-blue-600"></i>
-                                <div class="flex flex-col">
-                                    <span id="fecha" class="text-xs font-semibold text-gray-700"></span>
-                                    <span id="hora" class="text-sm font-bold text-gray-900"></span>
-                                </div>
-                            </div>
-                            <!-- Widget: Temperatura -->
-                            <div class="flex items-center gap-2 bg-white px-4 py-2 rounded-lg shadow-sm">
-                                <i class="fas fa-temperature-high text-orange-500"></i>
-                                <div class="flex flex-col">
-                                    <span class="text-xs text-gray-600">Ciudad Juárez</span>
-                                    <span id="temperatura" class="text-sm font-bold text-gray-900">
-                                        <i class="fas fa-spinner fa-spin text-gray-400"></i>
-                                    </span>
-                                </div>
-                            </div>
-
-                            <!-- Widget: Tipo de Cambio USD/MXN -->
-                            <div class="flex items-center gap-2 bg-white px-4 py-2 rounded-lg shadow-sm">
-                                <i class="fas fa-dollar-sign text-green-600"></i>
-                                <div class="flex flex-col">
-                                    <span class="text-xs text-gray-600">USD/MXN</span>
-                                    <span id="tipoCambio" class="text-sm font-bold text-gray-900">
-                                        <i class="fas fa-spinner fa-spin text-gray-400"></i>
-                                    </span>
-                                </div>
-                            </div>
+                            @include('partials.widget_fecha_hora')
+                            @include('partials.widget_temperatura')
+                            @include('partials.widget_tipo_cambio')
                         </div>
                     </div>
 

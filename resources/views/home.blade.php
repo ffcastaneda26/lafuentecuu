@@ -4,14 +4,13 @@
 
 @section('content')
     <div class="space-y-6">
-
         <!-- Banner de Patrocinadores Principal (Horizontal) -->
-        @if ($sponsors->where('status', 'active')->isNotEmpty())
+        @if ($sponsors->isNotEmpty())
             <div class="bg-white rounded-lg shadow-sm p-4 overflow-hidden">
                 <div class="flex items-center justify-center gap-6 overflow-x-auto">
-                    @foreach ($sponsors->where('status', 'active')->take(3) as $sponsor)
+                    @foreach ($sponsors as $sponsor)
                         <a href="{{ $sponsor->website }}" target="_blank" class="flex-shrink-0">
-                            <img src="{{ $sponsor->logo }}" alt="{{ $sponsor->name }}"
+                            <img src="{{ Storage::url($sponsor->logo) }}" alt="{{ $sponsor->name }}"
                                 class="h-20 object-contain hover:opacity-80 transition-opacity">
                         </a>
                     @endforeach

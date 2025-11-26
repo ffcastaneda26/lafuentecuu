@@ -43,33 +43,7 @@
         </div>
 
         <!-- Segunda fila del Header - Navegación de Categorías -->
-        <nav class="bg-gray-900">
-            <div class="container mx-auto px-4">
-                <div class="flex items-center justify-between overflow-x-auto">
-                    <!-- Botón Home -->
-                    <a href="/" class="flex-shrink-0 px-4 py-3 text-white hover:bg-gray-800 transition-colors">
-                        <i class="fas fa-home text-lg"></i>
-                    </a>
-
-                    <!-- Items de Categorías -->
-                    <div class="flex items-center space-x-1">
-                        @foreach ($categories as $category)
-                            <a href="/{{ $category->slug }}"
-                                class="px-4 py-3 text-white hover:bg-gray-800 transition-colors whitespace-nowrap text-sm font-medium uppercase">
-                                {{ $category->name }}
-                            </a>
-                        @endforeach
-                    </div>
-
-                    <!-- Búsqueda (opcional) -->
-                    <div class="flex-shrink-0 px-4">
-                        <button class="text-white hover:text-gray-300">
-                            <i class="fas fa-search text-lg"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </nav>
+        @include('partials.categories_nav')
     </header>
 
     <!-- MAIN CONTENT -->
@@ -161,6 +135,16 @@
     </footer>
 
     @stack('scripts')
-</body>
+    <script src="{{ asset('js/category_nav_responsive.js') }}"></script>
+    {{-- <script>
+        // Toggle del menú mobile
+        document.getElementById('mobile-menu-button').addEventListener('click', function() {
+            const menu = document.getElementById('mobile-menu');
+            const icon = this.querySelector('i');
 
-</html>
+            menu.classList.toggle('hidden');
+            icon.classList.toggle('fa-bars');
+            icon.classList.toggle('fa-times');
+        });
+    </script> --}} < /body>
+        < / html>

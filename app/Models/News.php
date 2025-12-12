@@ -22,6 +22,7 @@ class News extends Model
         'slug',
         'featured_image',
         'status',
+        'featured',
         'published_at',
         'views_count',
         'category_id',

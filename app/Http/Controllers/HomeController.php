@@ -22,7 +22,10 @@ class HomeController extends Controller
         // Obtener noticias publicadas con sus relaciones
         $news = News::published()
             ->with(['category', 'user', 'images', 'videos'])
+            ->orderBy('featured', 'desc')
+            ->orderBy('updated_at', 'desc')
             ->orderBy('published_at', 'desc')
+
             ->take(20) // Limitamos a las últimas 20 noticias
             ->get();
 

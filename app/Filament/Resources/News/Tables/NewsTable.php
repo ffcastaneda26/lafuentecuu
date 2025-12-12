@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\News\Tables;
 
 use Filament\Actions\EditAction;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -27,11 +28,14 @@ class NewsTable
                     ->label('Estado')
                     ->badge()
                     ->color(fn ($record) => $record->status_color),
+
+                IconColumn::make('featured')
+                    ->label('¿Destacada?')
+                    ->boolean(),
                 TextColumn::make('published_at')
-                    ->label('Publicada El')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->label('Publicada')
+                    ->since()
+                    ->sortable(),
                 TextColumn::make('views_count')
                     ->label('Vistas por')
                     ->numeric()

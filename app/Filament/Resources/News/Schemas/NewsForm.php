@@ -9,6 +9,7 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
@@ -53,7 +54,8 @@ class NewsForm
                         ->validationMessages([
                             'required' => 'El Subtítulo de la noticia es obligatorio.',
                             'max' => 'El Subtítulo no puede superar :max caracteres.',
-                        ]),
+                        ])->columnSpanFull(),
+
                     Select::make('status')
                         ->label('Estado')
                         ->options([
@@ -65,8 +67,6 @@ class NewsForm
                         ->default('borrador')
                         ->native(false)
                         ->live(debounce: 0), // Sin retraso
-                    //    logger('No es un arreglo:');
-                    //    logger('Devuelve:', [$status === NewStatusEnum::PUBLICADA->value]);
                     DateTimePicker::make('published_at')
                         ->label('Publicada el')
                         ->visible(function (Get $get) {
@@ -82,12 +82,18 @@ class NewsForm
                         ->validationMessages([
                             'required' => 'La fecha de publicación es obligatoria cuando la noticia es Publicada.',
                         ]),
-                ]),
+
+                ])->columns(2),
                 Group::make()->schema([
                     Select::make('category_id')
                         ->relationship('category', 'name')
                         ->label('Categoría')
                         ->required(),
+                    Toggle::make('featured')
+                        ->label('¿Destacada?')
+                        ->default(false)
+                        ->required()
+                        ->inline(false),
                     FileUpload::make('featured_image')
                         ->label('Imagen Destacada')
                         ->acceptedFileTypes([
@@ -113,9 +119,10 @@ class NewsForm
 
                             return time().'_'.$sanitizedName.'.'.$extension;
                         })
+                        ->columnSpanFull()
                         ->helperText('Tamaño máximo: 50MB. Formatos: JPG, PNG, WebP, GIF, MP4, MOV, AVI, WebM, MKV'),
 
-                ]),
+                ])->columns(2),
                 Group::make()->schema([
                     RichEditor::make('body')
                         ->label('Contenido')

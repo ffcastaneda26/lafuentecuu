@@ -45,7 +45,13 @@ class NewsResource extends Resource
 
     public static function table(Table $table): Table
     {
-        return NewsTable::configure($table);
+
+        return NewsTable::configure($table)
+            ->defaultSort('featured', 'desc')
+            ->defaultSort('updated_at', 'desc');
+        // ->defaultSort('created_at', 'desc')
+        // ->defaultSort('published_at', 'desc');
+
     }
 
     public static function getRelations(): array

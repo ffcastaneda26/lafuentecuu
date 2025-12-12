@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Filament\Forms\Components\Toggle;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
@@ -22,11 +23,22 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         if ($this->app->environment('cloudflared')) {
-                URL::forceScheme('https');
+            URL::forceScheme('https');
         }
 
         Gate::before(function ($user, $ability) {
             return $user->hasRole('Super Admin') ? true : null;
         }); //
+
+        Toggle::configureUsing(function (Toggle $toggle): void {
+            $toggle
+                ->translateLabel()
+                ->inline(false)
+                ->onIcon('heroicon-m-check-circle')
+                ->offIcon('heroicon-m-x-circle')
+                ->onColor('success')
+                ->offColor('danger');
+        });
+
     }
 }

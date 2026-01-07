@@ -47,31 +47,8 @@
 
 <body class="bg-gray-50">
     <!-- Header (igual que welcome) -->
-    <header class="bg-white shadow-md">
-        <div class="container mx-auto px-4 py-4">
-            <div class="flex items-center justify-between">
-                <a href="{{ route('home') }}" class="text-2xl font-bold text-gray-800">
-                    Portal de Noticias
-                </a>
-            </div>
-        </div>
 
-        <nav class="bg-gray-800">
-            <div class="container mx-auto px-4">
-                <ul class="flex flex-wrap space-x-6 py-3 text-white">
-                    <li><a href="{{ route('home') }}" class="hover:text-gray-300">Inicio</a></li>
-                    @foreach ($categories as $category)
-                        <li>
-                            <a href="{{ route('category.show', $category->slug) }}"
-                                class="hover:text-gray-300 {{ $news->category_id == $category->id ? 'text-blue-400' : '' }}">
-                                {{ $category->name }}
-                            </a>
-                        </li>
-                    @endforeach
-                </ul>
-            </div>
-        </nav>
-    </header>
+    @include('partials.header')
 
     <!-- Contenido -->
     <main class="container mx-auto px-4 py-8">

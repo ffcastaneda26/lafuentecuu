@@ -49,21 +49,16 @@ class News extends Model
 
         // Nueva lógica de reclasificación
         static::saving(function ($news) {
-            // Solo actuamos si el sort_order es mayor a 0 y ha cambiado
-            if ($news->sort_order > 0 && $news->isDirty('sort_order')) {
-
-                // Buscamos si ya existe una noticia con ese orden
-                $existing = self::where('sort_order', $news->sort_order)
+            if ($news->isDirty('sort_order') && $news->sort_order >= 1 && $news->sort_order <= 5) {
+                // 1. Desplazamos las existentes para dejar hueco a la nueva
+                self::where('sort_order', '>=', $news->sort_order)
                     ->where('id', '!=', $news->id)
-                    ->first();
+                    ->increment('sort_order');
 
-                if ($existing) {
-                    // Desplazamos todas las noticias hacia abajo (incrementamos su orden)
-                    // de la posición actual en adelante
-                    self::where('sort_order', '>=', $news->sort_order)
-                        ->where('id', '!=', $news->id)
-                        ->increment('sort_order');
-                }
+                // 2. IMPORTANTE: Cualquier noticia desplazada al puesto 6 o superior
+                // vuelve a 0, manteniendo solo 5 noticias con orden.
+                self::where('sort_order', '>', 5)
+                    ->update(['sort_order' => 0]);
             }
         });
     }

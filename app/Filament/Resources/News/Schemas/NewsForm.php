@@ -15,6 +15,8 @@ use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Str;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
+use Filament\Forms\Components\Placeholder;
+use Illuminate\Support\HtmlString;
 
 class NewsForm
 {
@@ -22,6 +24,25 @@ class NewsForm
     {
         return $schema
             ->components([
+                Placeholder::make('order_status')
+                    ->label('Estado de la Portada')
+                    ->content(function () {
+                        $orders = News::whereBetween('sort_order', [1, 5])->pluck('sort_order')->toArray();
+                        $missing = array_diff([1, 2, 3, 4, 5], $orders);
+
+                        if (empty($missing)) {
+                            return new HtmlString('<span class="text-success-600 font-bold">✅ Todas las posiciones de portada están cubiertas.</span>');
+                        }
+
+                        $list = implode(', ', $missing);
+                        return new HtmlString("
+            <div class='p-3 bg-warning-50 border-l-4 border-warning-400 text-warning-700'>
+                <p class='font-bold'>⚠️ Aviso: Portada Incompleta</p>
+                <p class='text-sm'>Faltan noticias asignadas a las posiciones: <strong>{$list}</strong>.</p>
+            </div>
+        ");
+                    })
+                    ->columnSpanFull(),
                 Group::make()->schema([
                     TextInput::make('title')
                         ->label('Tìtulo')
@@ -89,23 +110,24 @@ class NewsForm
                         ->relationship('category', 'name')
                         ->label('Categoría')
                         ->required(),
-                    Toggle::make('featured')
-                        ->label('¿Destacada?')
-                        ->default(false)
-                        ->required()
-                        ->inline(false),
+                    // Toggle::make('featured')
+                    //     ->label('¿Destacada?')
+                    //     ->default(false)
+                    //     ->required()
+                    //     ->inline(false),
                     Select::make('sort_order')
                         ->label('Posición en Inicio')
                         ->options([
+                            0 => 'No mostrar en el Top 5',
                             1 => '1 - Principal (Grande)',
-                            2 => '2 - Secundaria',
-                            3 => '3 - Secundaria',
-                            4 => '4 - Secundaria',
-                            5 => '5 - Secundaria',
+                            2 => '2 - Secundaria superior',
+                            3 => '3 - Secundaria superior',
+                            4 => '4 - Secundaria inferior',
+                            5 => '5 - Secundaria inferior',
                         ])
-                        ->helperText('Solo aplica si la noticia está marcada como destacada.')
                         ->default(0)
-                        ->selectablePlaceholder(true),
+                        ->selectablePlaceholder(false)
+                        ->hint('Si eliges una posición ocupada, las demás se desplazarán.'),
                     FileUpload::make('featured_image')
                         ->label('Imagen Destacada')
                         ->acceptedFileTypes([

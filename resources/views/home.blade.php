@@ -83,6 +83,10 @@
                                     <div class="p-4">
                                         <h3
                                             class="font-bold text-lg mb-2 line-clamp-2 group-hover:text-red-600 transition-colors">
+                                            {{ $newsItem->sort_order }}
+                                        </h3>
+                                        <h3
+                                            class="font-bold text-lg mb-2 line-clamp-2 group-hover:text-red-600 transition-colors">
                                             {{ $newsItem->title }}
                                         </h3>
                                         <p class="text-gray-600 text-sm line-clamp-2 mb-3">

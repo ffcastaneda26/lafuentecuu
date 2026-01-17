@@ -22,6 +22,8 @@ class NewsTable
                     ->searchable(),
                 TextColumn::make('title')
                     ->label('Título')
+                    ->limit(50)
+                    ->wrap()
                     ->searchable(),
 
                 TextColumn::make('status')
@@ -29,11 +31,13 @@ class NewsTable
                     ->badge()
                     ->color(fn($record) => $record->status_color),
 
-                IconColumn::make('featured')
-                    ->label('¿Destacada?')
-                    ->boolean(),
+                // IconColumn::make('featured')
+                //     ->label('¿Destacada?')
+                //     ->boolean(),
                 TextColumn::make('sort_order')
-                    ->label('Orden'),
+                    ->label('Orden')
+                    ->sortable()
+                    ->searchable(),
                 TextColumn::make('published_at')
                     ->label('Publicada')
                     ->since()

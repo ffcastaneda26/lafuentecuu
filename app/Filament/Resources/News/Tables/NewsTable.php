@@ -27,11 +27,13 @@ class NewsTable
                 TextColumn::make('status')
                     ->label('Estado')
                     ->badge()
-                    ->color(fn ($record) => $record->status_color),
+                    ->color(fn($record) => $record->status_color),
 
                 IconColumn::make('featured')
                     ->label('¿Destacada?')
                     ->boolean(),
+                TextColumn::make('sort_order')
+                    ->label('Orden'),
                 TextColumn::make('published_at')
                     ->label('Publicada')
                     ->since()

@@ -23,6 +23,7 @@ class News extends Model
         'featured_image',
         'status',
         'featured',
+        'sort_order',
         'published_at',
         'views_count',
         'category_id',
@@ -35,6 +36,7 @@ class News extends Model
         'status' => NewStatusEnum::class,
     ];
 
+
     protected static function boot()
     {
         parent::boot();
@@ -42,6 +44,26 @@ class News extends Model
         static::creating(function ($news) {
             if (empty($news->slug)) {
                 $news->slug = Str::slug($news->title);
+            }
+        });
+
+        // Nueva lógica de reclasificación
+        static::saving(function ($news) {
+            // Solo actuamos si el sort_order es mayor a 0 y ha cambiado
+            if ($news->sort_order > 0 && $news->isDirty('sort_order')) {
+
+                // Buscamos si ya existe una noticia con ese orden
+                $existing = self::where('sort_order', $news->sort_order)
+                    ->where('id', '!=', $news->id)
+                    ->first();
+
+                if ($existing) {
+                    // Desplazamos todas las noticias hacia abajo (incrementamos su orden)
+                    // de la posición actual en adelante
+                    self::where('sort_order', '>=', $news->sort_order)
+                        ->where('id', '!=', $news->id)
+                        ->increment('sort_order');
+                }
             }
         });
     }

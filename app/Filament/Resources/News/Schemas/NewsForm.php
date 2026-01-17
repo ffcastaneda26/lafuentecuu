@@ -28,9 +28,9 @@ class NewsForm
                         ->required()
                         ->maxLength(150)
                         ->rules([
-                            fn ($record) => function (string $attribute, $value, $fail) use ($record) {
+                            fn($record) => function (string $attribute, $value, $fail) use ($record) {
                                 $exists = News::whereRaw('LOWER(title) = ?', [strtolower($value)])
-                                    ->when($record, fn ($query) => $query->where('id', '!=', $record->id))
+                                    ->when($record, fn($query) => $query->where('id', '!=', $record->id))
                                     ->exists();
 
                                 if ($exists) {
@@ -94,6 +94,18 @@ class NewsForm
                         ->default(false)
                         ->required()
                         ->inline(false),
+                    Select::make('sort_order')
+                        ->label('Posición en Inicio')
+                        ->options([
+                            1 => '1 - Principal (Grande)',
+                            2 => '2 - Secundaria',
+                            3 => '3 - Secundaria',
+                            4 => '4 - Secundaria',
+                            5 => '5 - Secundaria',
+                        ])
+                        ->helperText('Solo aplica si la noticia está marcada como destacada.')
+                        ->default(0)
+                        ->selectablePlaceholder(true),
                     FileUpload::make('featured_image')
                         ->label('Imagen Destacada')
                         ->acceptedFileTypes([
@@ -117,7 +129,7 @@ class NewsForm
                             $sanitizedName = Str::slug($originalName);
                             $extension = $file->getClientOriginalExtension();
 
-                            return time().'_'.$sanitizedName.'.'.$extension;
+                            return time() . '_' . $sanitizedName . '.' . $extension;
                         })
                         ->columnSpanFull()
                         ->helperText('Tamaño máximo: 50MB. Formatos: JPG, PNG, WebP, GIF, MP4, MOV, AVI, WebM, MKV'),

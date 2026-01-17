@@ -22,11 +22,11 @@ class HomeController extends Controller
         // Obtener noticias publicadas con sus relaciones
         $news = News::published()
             ->with(['category', 'user', 'images', 'videos'])
-            ->orderBy('featured', 'desc')
-            ->orderBy('updated_at', 'desc')
-            ->orderBy('published_at', 'desc')
-
-            ->take(20) // Limitamos a las últimas 20 noticias
+            ->orderByRaw('CASE WHEN sort_order > 0 THEN 0 ELSE 1 END') // Primero las que tienen orden
+            ->orderBy('sort_order', 'asc') // 1, 2, 3...
+            ->orderBy('featured', 'desc')  // Luego las destacadas genéricas
+            ->orderBy('published_at', 'desc') // Finalmente por fecha
+            ->take(20)
             ->get();
 
         // Obtener patrocinadores activos

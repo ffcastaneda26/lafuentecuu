@@ -18,6 +18,31 @@ class HomeController extends Controller
         $categories = Category::active()
             ->ordered()
             ->get();
+        // 1. Top 5 Ordenado (Cabecera)
+        $featuredNews = News::published()
+            ->whereBetween('sort_order', [1, 5])
+            ->orderBy('sort_order', 'asc')
+            ->with(['category', 'user', 'images', 'videos'])
+            ->get();
+        // 2. Obtener "Más Noticias": 2 más recientes por categoría
+        // Filtramos en la base de datos y luego limitamos con PHP para mayor precisión
+        $moreNews = News::published()
+            ->where('is_more_news', true)
+            ->whereNotIn('id', $featuredNews->pluck('id'))
+            ->orderBy('category_id')
+            ->orderBy('published_at', 'desc')
+            ->get()
+            ->groupBy('category_id') // Agrupamos por categoría
+            ->map(function ($categoryGroup) {
+                return $categoryGroup->take(2); // Tomamos solo las 2 más recientes de ese grupo
+            })
+            ->flatten();
+        $mostViewedNews = News::published()
+            ->with(['category', 'user', 'images', 'videos'])
+            ->where('is_most_viewed', true)
+            ->orderBy('views_count', 'desc')
+            ->take(8) // Por ejemplo, las 4 más recientes marcadas
+            ->get();
 
         // Obtener noticias publicadas con sus relaciones
         $news = News::published()
@@ -38,13 +63,21 @@ class HomeController extends Controller
 
         // Obtener información de contacto
         $contactInfo = ContactInfo::first() ?? new ContactInfo;
-
         return view('home', compact(
             'categories',
-            'news',
+            'featuredNews',
+            'moreNews',
             'sponsors',
-            'contactInfo'
+            'contactInfo',
+            'news',
+            'mostViewedNews'
         ));
+        // return view('home', compact(
+        //     'categories',
+        //     'news',
+        //     'sponsors',
+        //     'contactInfo'
+        // ));
     }
 
     /**

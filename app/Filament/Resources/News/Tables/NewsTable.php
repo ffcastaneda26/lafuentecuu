@@ -4,6 +4,7 @@ namespace App\Filament\Resources\News\Tables;
 
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -22,7 +23,7 @@ class NewsTable
                     ->searchable(),
                 TextColumn::make('title')
                     ->label('Título')
-                    ->limit(50)
+                    ->limit(30)
                     ->wrap()
                     ->searchable(),
 
@@ -42,11 +43,30 @@ class NewsTable
                     ->label('Publicada')
                     ->since()
                     ->sortable(),
+                ToggleColumn::make('is_more_news')
+                    ->label('¿Más Noticias?')
+                    ->onColor('success')
+                    ->offColor('danger')
+                    ->onIcon('heroicon-m-check')
+                    ->offIcon('heroicon-m-x-mark')
+                    ->afterStateUpdated(function ($record, $state) {
+                        // Opcional: Puedes disparar una notificación si lo deseas
+                        // Notification::make()->title('Estado actualizado')->success()->send();
+                    }),
+                ToggleColumn::make('is_most_viewed')
+                    ->label('¿Más Vistas?')
+                    ->onIcon('heroicon-m-check')
+                    ->offIcon('heroicon-m-x-mark')
+                    ->afterStateUpdated(function ($record, $state) {
+                        // Opcional: Notificación rápida
+                        // Notification::make()->title('Sección Más Vistas actualizada')->info()->send();
+                    }),
                 TextColumn::make('views_count')
                     ->label('Vistas por')
                     ->numeric()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
 
                 TextColumn::make('user.name')
                     ->label('Creada Por')

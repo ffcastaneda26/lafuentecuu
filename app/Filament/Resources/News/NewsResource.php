@@ -48,6 +48,8 @@ class NewsResource extends Resource
 
         return NewsTable::configure($table)
             ->defaultSort('featured', 'desc')
+            ->defaultSort('is_more_news', 'desc')
+            ->defaultSort('is_most_viewed', 'desc')
             ->defaultSort('updated_at', 'desc');
         // ->defaultSort('created_at', 'desc')
         // ->defaultSort('published_at', 'desc');

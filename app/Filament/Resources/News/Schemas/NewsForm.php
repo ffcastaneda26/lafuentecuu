@@ -110,11 +110,16 @@ class NewsForm
                         ->relationship('category', 'name')
                         ->label('Categoría')
                         ->required(),
-                    // Toggle::make('featured')
-                    //     ->label('¿Destacada?')
-                    //     ->default(false)
-                    //     ->required()
-                    //     ->inline(false),
+                    Toggle::make('is_more_news')
+                        ->label('Incluir en "Más Noticias"')
+                        ->helperText('Si se marca, la noticia aparecerá en la sección de más noticias.')
+                        ->onColor('info')
+                        ->default(false),
+                    Toggle::make('is_most_viewed')
+                        ->label('Incluir en "Más Vistas"')
+                        ->helperText('Si se marca, la noticia aparecerá en la sección de tendencias/más vistas.')
+                        ->onColor('info')
+                        ->default(false),
                     Select::make('sort_order')
                         ->label('Posición en Inicio')
                         ->options([

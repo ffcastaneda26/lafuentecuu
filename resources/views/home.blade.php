@@ -62,7 +62,7 @@
                             </div>
                         </a>
                     </article>
-                    {{ $news->count() }}
+
                     <!-- Grid de Noticias Secundarias (2x2) -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         @foreach ($news->slice(1, 4) as $newsItem)

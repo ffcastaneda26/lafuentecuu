@@ -2,35 +2,38 @@
 
 namespace App\Models;
 
+use App\Enums\AdvertisementPositionEnum;
+use App\Enums\AdvertisementTypeEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Advertisement extends Model
 {
+    /** @use HasFactory<\Database\Factories\AdvertisementFactory> */
     use HasFactory;
-
     protected $fillable = [
         'sponsor_id',
         'title',
-        'ad_type',
-        'content',
+        'type',
+        'description',
         'position',
         'click_url',
-        'impressions_count',
-        'clicks_count',
-        'status',
+        'media_url',
+        'active',
         'start_date',
         'end_date',
         'priority',
+        'clicks_count',
     ];
 
+
     protected $casts = [
-        'content' => 'array',
+        'active' => 'boolean',
         'start_date' => 'datetime',
         'end_date' => 'datetime',
-        'impressions_count' => 'integer',
-        'clicks_count' => 'integer',
+        'ad_type' => AdvertisementTypeEnum::class,
+        'position' => AdvertisementPositionEnum::class,
         'priority' => 'integer',
     ];
 
@@ -41,14 +44,12 @@ class Advertisement extends Model
 
     public function scopeActive($query)
     {
-        return $query->where('status', 'active')
+        return $query->where('active', true)
             ->where(function ($q) {
-                $q->whereNull('start_date')
-                    ->orWhere('start_date', '<=', now());
+                $q->whereNull('start_date')->orWhere('start_date', '<=', now());
             })
             ->where(function ($q) {
-                $q->whereNull('end_date')
-                    ->orWhere('end_date', '>=', now());
+                $q->whereNull('end_date')->orWhere('end_date', '>=', now());
             });
     }
 
@@ -58,10 +59,6 @@ class Advertisement extends Model
             ->orderBy('priority', 'desc');
     }
 
-    public function incrementImpressions()
-    {
-        $this->increment('impressions_count');
-    }
 
     public function incrementClicks()
     {

@@ -9,6 +9,7 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
+use Filament\Tables\Columns\ViewColumn;
 use Filament\Tables\Table;
 
 class AdvertisementsTable
@@ -25,11 +26,11 @@ class AdvertisementsTable
                     ->label('Título')
                     ->sortable()
                     ->searchable(),
-                TextColumn::make('type')
-                    ->searchable()
-                    ->sortable()
-                    ->badge()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                // TextColumn::make('type')
+                //     ->searchable()
+                //     ->sortable()
+                //     ->badge()
+                //     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('position')
                     ->label('Posición')
                     ->sortable()
@@ -39,9 +40,11 @@ class AdvertisementsTable
                 TextColumn::make('media_url')
                     ->label('Anuncio')
                     ->searchable(),
-                ImageColumn::make('media_url')
-                    ->label('Imagen Principal')
-                    ->disk('public'),
+
+                ViewColumn::make('media_url')
+                    ->label('Anuncio')
+                    ->view('filament.tables.columns.media-preview')
+                    ->alignCenter(),
 
                 ToggleColumn::make('active')
                     ->label('¿Activo?')

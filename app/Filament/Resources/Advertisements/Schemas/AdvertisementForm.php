@@ -42,6 +42,14 @@ class AdvertisementForm
                         ->options(AdvertisementTypeEnum::class)
                         ->default('imagen')
                         ->required(),
+
+
+                    DatePicker::make('start_date')
+                        ->label('Inicio')
+                        ->date(),
+                    DatePicker::make('end_date')
+                        ->label('Final')
+                        ->date(),
                     TextInput::make('priority')
                         ->required()
                         ->numeric()
@@ -51,13 +59,6 @@ class AdvertisementForm
                         ->options(AdvertisementPositionEnum::class)
                         ->default('encabezado')
                         ->required(),
-
-                    DatePicker::make('start_date')
-                        ->label('Inicio')
-                        ->date(),
-                    DatePicker::make('end_date')
-                        ->label('Final')
-                        ->date(),
                     Toggle::make('active')
                         ->label('¿Activo?')
                         ->default(true),

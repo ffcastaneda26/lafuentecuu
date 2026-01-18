@@ -7,6 +7,7 @@ use App\Enums\AdvertisementTypeEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Storage;
 
 class Advertisement extends Model
 {
@@ -37,6 +38,15 @@ class Advertisement extends Model
         'priority' => 'integer',
     ];
 
+
+    protected static function booted()
+    {
+        static::deleted(function ($model) {
+            if ($model->media_url) {
+                Storage::disk('public')->delete($model->media_url);
+            }
+        });
+    }
     public function sponsor(): BelongsTo
     {
         return $this->belongsTo(Sponsor::class);

@@ -18,16 +18,16 @@ use Filament\Tables\Table;
 class NewsResource extends Resource
 {
     protected static ?string $model = News::class;
+    protected static string|BackedEnum|null $activeNavigationIcon = Heroicon::ShieldCheck;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::Newspaper;
 
     protected static ?string $recordTitleAttribute = 'Title';
 
-    protected static string|BackedEnum|null $activeNavigationIcon = Heroicon::ShieldCheck;
 
     protected static ?string $navigationLabel = 'Noticias';
 
-    protected static ?int $navigationSort = 50;
+    protected static ?int $navigationSort = 10;
 
     public static function getNavigationLabel(): string
     {

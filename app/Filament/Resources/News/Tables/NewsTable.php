@@ -49,18 +49,14 @@ class NewsTable
                     ->offColor('danger')
                     ->onIcon('heroicon-m-check')
                     ->offIcon('heroicon-m-x-mark')
-                    ->afterStateUpdated(function ($record, $state) {
-                        // Opcional: Puedes disparar una notificación si lo deseas
-                        // Notification::make()->title('Estado actualizado')->success()->send();
-                    }),
+                    ->afterStateUpdated(function ($record, $state) {}),
                 ToggleColumn::make('is_most_viewed')
                     ->label('¿Más Vistas?')
+                    ->onColor('success')
+                    ->offColor('danger')
                     ->onIcon('heroicon-m-check')
                     ->offIcon('heroicon-m-x-mark')
-                    ->afterStateUpdated(function ($record, $state) {
-                        // Opcional: Notificación rápida
-                        // Notification::make()->title('Sección Más Vistas actualizada')->info()->send();
-                    }),
+                    ->afterStateUpdated(function ($record, $state) {}),
                 TextColumn::make('views_count')
                     ->label('Vistas por')
                     ->numeric()

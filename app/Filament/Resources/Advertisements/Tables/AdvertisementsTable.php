@@ -37,10 +37,6 @@ class AdvertisementsTable
                     ->searchable()
                     ->badge(),
 
-                TextColumn::make('media_url')
-                    ->label('Anuncio')
-                    ->searchable(),
-
                 ViewColumn::make('media_url')
                     ->label('Anuncio')
                     ->view('filament.tables.columns.media-preview')
@@ -56,11 +52,13 @@ class AdvertisementsTable
                     ->sortable()
                     ->afterStateUpdated(function ($record, $state) {}),
                 TextColumn::make('start_date')
+                    ->label('Inicio')
                     ->searchable()
                     ->sortable()
                     ->date('D d M Y')
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('end_date')
+                    ->label('Final')
                     ->dateTime()
                     ->searchable()
                     ->sortable()

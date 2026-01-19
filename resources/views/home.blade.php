@@ -21,9 +21,7 @@
         <!-- Grid Principal -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-            <!-- Columna Izquierda - Noticias Principales (2 columnas en lg) -->
             <div class="lg:col-span-2 space-y-6">
-
                 <!-- Noticia Principal (Featured) -->
                 @if ($news->isNotEmpty())
                     @php $featuredNews = $news->first(); @endphp
@@ -100,36 +98,6 @@
                         @endforeach
                     </div>
 
-                    <!-- Lista de Noticias Adicionales -->
-                    {{-- <section>
-                        <div class="flex items-center justify-between mb-4">
-                            <h2 class="text-2xl font-bold text-gray-800 border-l-4 border-red-600 pl-3">
-                                Más Noticias
-                            </h2>
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                            @forelse ($moreNews as $item)
-                                <article
-                                    class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-                                    <a href="{{ route('news.show', $item->slug) }}">
-                                        <img src="{{ Storage::url($item->featured_image) }}"
-                                            class="w-full h-40 object-cover">
-                                        <div class="p-4">
-                                            <h3 class="font-bold text-sm line-clamp-2">{{ $item->title }}</h3>
-                                        </div>
-                                        <h3
-                                            class="font-bold text-lg mb-2 line-clamp-2 group-hover:text-red-600 transition-colors">
-                                            {{ $item->category->name }}
-                                        </h3>
-                                    </a>
-                                </article>
-                            @empty
-                                <p class="col-span-full text-gray-500 italic">No hay noticias marcadas para esta sección.
-                                </p>
-                            @endforelse
-                        </div>
-                    </section> --}}
                 @endif
             </div>
 
@@ -148,35 +116,7 @@
                 @endif
 
                 <!-- Últimas Noticias (Sidebar) -->
-                {{-- <div class="bg-white rounded-lg shadow-md p-6">
-                    <h3 class="text-xl font-bold mb-4 pb-2 border-b-2 border-red-600">
-                        <i class="fas fa-fire text-red-600 mr-2"></i>LAS MAS VISTAS
-                    </h3>
-                    <div class="space-y-4">
-                        @foreach ($news->sortByDesc('views_count')->take(5) as $trendingNews)
-                            <article class="group cursor-pointer">
-                                <a href="/noticia/{{ $trendingNews->slug }}" class="flex gap-3">
-                                    <span
-                                        class="flex-shrink-0 text-3xl font-bold text-gray-300 group-hover:text-red-600 transition-colors">
-                                        {{ $loop->index + 1 }}
-                                    </span>
-                                    <div>
-                                        <span class="text-red-600 text-xs font-bold uppercase">
-                                            {{ $trendingNews->category->name }}
-                                        </span>
-                                        <h4
-                                            class="font-semibold text-sm line-clamp-3 group-hover:text-red-600 transition-colors">
-                                            {{ $trendingNews->title }}
-                                        </h4>
-                                        <span class="text-gray-500 text-xs mt-1 inline-block">
-                                            <i class="far fa-eye mr-1"></i>{{ number_format($trendingNews->views_count) }}
-                                        </span>
-                                    </div>
-                                </a>
-                            </article>
-                        @endforeach
-                    </div>
-                </div> --}}
+
                 <div class="bg-white rounded-lg shadow-md p-6">
                     <h3 class="text-xl font-bold mb-4 pb-2 border-b-2 border-red-600">
                         <i class="fas fa-fire text-red-600 mr-2"></i>LAS MAS VISTAS
@@ -185,15 +125,6 @@
                         @forelse ($mostViewedNews as $index => $item)
                             <article class="group cursor-pointer">
                                 <a href="/noticia/{{ $item->slug }}" class="flex gap-3">
-                                    {{-- <div
-                                        class="relative bg-white p-4 rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 group border border-gray-100">
-
-                                        <div
-                                            class="absolute -top-4 -left-4 w-12 h-12 bg-white border-4 border-blue-600 rounded-full flex items-center justify-center z-10 shadow-lg">
-                                            <span class="text-xl font-black text-blue-600">{{ $index + 1 }}</span>
-                                        </div>
-                                    </div> --}}
-
                                     <span
                                         class="flex-shrink-0 text-3xl font-bold text-gray-300 group-hover:text-red-600 transition-colors">
                                         {{ $loop->index + 1 }}
@@ -222,68 +153,13 @@
                                     </div>
                                 </a>
                             </article>
-                            {{-- <article
-                                class="relative bg-white p-4 rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 group border border-gray-100">
-                                <div
-                                    class="absolute -top-4 -left-4 w-12 h-12 bg-white border-4 border-blue-600 rounded-full flex items-center justify-center z-10 shadow-lg">
-                                    <span class="text-xl font-black text-blue-600">{{ $index + 1 }}</span>
-                                </div>
 
-                                <a href="{{ route('news.show', $item->slug) }}" class="flex flex-col h-full">
-                                    <div class="relative h-48 mb-4 overflow-hidden rounded-lg">
-                                        <img src="{{ Storage::url($item->featured_image) }}"
-                                            class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
-                                        <div
-                                            class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-3">
-                                            <span
-                                                class="text-[10px] font-bold text-white uppercase bg-blue-600 px-2 py-0.5 rounded">
-                                                {{ $item->category->name }}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <h3
-                                        class="text-lg font-bold text-gray-800 line-clamp-2 group-hover:text-blue-600 transition-colors flex-grow">
-                                        {{ $item->title }}
-                                    </h3>
-
-                                    <div
-                                        class="mt-4 pt-4 border-t border-gray-50 flex justify-between items-center text-xs text-gray-500 font-medium">
-                                        <span class="flex items-center gap-1">
-                                            <i class="far fa-calendar-alt"></i>
-                                            {{ $item->published_at->diffForHumans() }}
-                                        </span>
-                                        <span
-                                            class="flex items-center gap-1 bg-blue-50 text-blue-700 px-2 py-1 rounded-full">
-                                            <i class="fas fa-fire"></i>
-                                            {{ number_format($item->views_count) }} visitas
-                                        </span>
-                                    </div>
-                                </a>
-                            </article> --}}
                         @empty
                             <div class="col-span-full text-center py-12">
                                 <p class="text-gray-400 italic">No hay noticias destacadas en esta sección todavía.</p>
                             </div>
                         @endforelse
                     </div>
-
-                    <!-- Categorías Populares -->
-                    {{-- <div class="bg-white rounded-lg shadow-md p-6">
-                    <h3 class="text-xl font-bold mb-4 pb-2 border-b-2 border-red-600">Secciones</h3>
-                    <div class="space-y-2">
-                        @foreach ($categories as $category)
-                            <a href="/{{ $category->slug }}"
-                                class="flex items-center justify-between py-2 px-3 rounded hover:bg-gray-100 transition-colors group">
-                                <span class="font-medium text-gray-700 group-hover:text-red-600">
-                                    {{ $category->name }}
-                                </span>
-                                <i class="fas fa-chevron-right text-gray-400 group-hover:text-red-600"></i>
-                            </a>
-                        @endforeach
-                    </div>
-                </div> --}}
-
             </aside>
         </div>
         <!-- Más Noticias a todo el ancho de la pantalla -->

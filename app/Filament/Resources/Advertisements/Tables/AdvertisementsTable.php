@@ -58,13 +58,13 @@ class AdvertisementsTable
                 TextColumn::make('start_date')
                     ->searchable()
                     ->sortable()
-                    ->dateTime()
+                    ->date('D d M Y')
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('end_date')
                     ->dateTime()
                     ->searchable()
                     ->sortable()
-                    ->dateTime()
+                    ->date('D d M Y')
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('priority')
                     ->numeric()

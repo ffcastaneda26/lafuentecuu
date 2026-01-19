@@ -29,8 +29,8 @@ class HomeController extends Controller
         $moreNews = News::published()
             ->where('is_more_news', true)
             ->whereNotIn('id', $featuredNews->pluck('id'))
-            ->orderBy('category_id')
             ->orderBy('published_at', 'desc')
+            ->orderBy('category_id')
             ->get()
             ->groupBy('category_id') // Agrupamos por categoría
             ->map(function ($categoryGroup) {

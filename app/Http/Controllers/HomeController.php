@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\AdvertisementPositionEnum;
+use App\Models\Advertisement;
 use App\Models\Category;
 use App\Models\ContactInfo;
 use App\Models\News;
@@ -14,6 +16,19 @@ class HomeController extends Controller
      */
     public function index()
     {
+        // 1. Mantenimiento: Desactivar anuncios cuya fecha final ya pasó
+        Advertisement::where('active', true)
+            ->whereNotNull('end_date')
+            ->where('end_date', '<', now()->startOfDay())
+            ->update(['active' => false]);
+
+        // 2. Obtener Anuncios para el Slider (Posición Encabezado)
+        $headerAds = Advertisement::active() // Usa tu scope del modelo
+            ->where('position', AdvertisementPositionEnum::HEADER->value)
+            ->orderBy('priority', 'asc')
+            ->select('id', 'title', 'position', 'click_url', 'media_url', 'type')
+            ->get();
+
         // Obtener categorías activas ordenadas
         $categories = Category::active()
             ->ordered()
@@ -54,30 +69,18 @@ class HomeController extends Controller
             ->take(20)
             ->get();
 
-        // Obtener patrocinadores activos
-        $sponsors = Sponsor::active()
-            ->whereDate('contract_start', '<=', now())
-            ->whereDate('contract_end', '>=', now())
-            ->inRandomOrder() // Rotar patrocinadores aleatoriamente
-            ->get();
-
         // Obtener información de contacto
         $contactInfo = ContactInfo::first() ?? new ContactInfo;
+
         return view('home', compact(
+            'headerAds', // Pasamos los anuncios en lugar de sponsors
             'categories',
             'featuredNews',
             'moreNews',
-            'sponsors',
-            'contactInfo',
             'news',
-            'mostViewedNews'
+            'mostViewedNews',
+            'contactInfo'
         ));
-        // return view('home', compact(
-        //     'categories',
-        //     'news',
-        //     'sponsors',
-        //     'contactInfo'
-        // ));
     }
 
     /**

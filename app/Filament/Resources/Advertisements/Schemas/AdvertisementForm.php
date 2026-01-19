@@ -46,7 +46,9 @@ class AdvertisementForm
 
                     DatePicker::make('start_date')
                         ->label('Inicio')
-                        ->date(),
+                        ->minDate(now()->startOfDay())
+                        ->native(false) // Muestra el calendario estilo Filament en lugar del nativo del navegador
+                        ->displayFormat('d/m/Y'),
                     DatePicker::make('end_date')
                         ->label('Final')
                         ->date(),

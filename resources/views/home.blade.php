@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="space-y-6">
-        <!-- Banner de Patrocinadores Principal (Horizontal) -->
+        {{-- <!-- Banner de Patrocinadores Principal (Horizontal) -->
         @if ($sponsors->isNotEmpty())
             <div class="bg-white rounded-lg shadow-sm p-4 overflow-hidden h-48">
                 <div class="flex items-center justify-center gap-6 overflow-x-auto">
@@ -16,8 +16,59 @@
                     @endforeach
                 </div>
             </div>
-        @endif
+        @endif --}}
 
+        @if ($headerAds->isNotEmpty())
+            <div class="relative group bg-gray-50 rounded-xl shadow-inner p-2 mb-6">
+                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-2 ml-2">Publicidad Destacada</p>
+
+                <div id="ad-slider"
+                    class="flex overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar gap-4 h-56 items-center px-4">
+                    @foreach ($headerAds as $ad)
+                        <div class="flex-shrink-0 w-full md:w-1/2 lg:w-1/3 snap-center h-full">
+                            <div
+                                class="relative h-full w-full bg-white rounded-lg overflow-hidden border border-gray-100 shadow-sm">
+                                <a href="{{ $ad->click_url }}" target="_blank" class="block h-full w-full">
+                                    @if ($ad->type === \App\Enums\AdvertisementTypeEnum::VIDEO->value)
+                                        <video class="w-full h-full object-cover" autoplay muted loop playsinline>
+                                            <source src="{{ Storage::url($ad->media_url) }}" type="video/mp4">
+                                        </video>
+                                    @else
+                                        <img src="{{ Storage::url($ad->media_url) }}" alt="{{ $ad->title }}"
+                                            class="w-full h-full object-contain p-2 transition-transform duration-500 hover:scale-105">
+                                    @endif
+                                </a>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+
+                <button onclick="document.getElementById('ad-slider').scrollBy({left: -300, behavior: 'smooth'})"
+                    class="absolute left-0 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-2 rounded-full shadow-md ml-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                </button>
+
+                <button onclick="document.getElementById('ad-slider').scrollBy({left: 300, behavior: 'smooth'})"
+                    class="absolute right-0 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-2 rounded-full shadow-md mr-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </button>
+            </div>
+
+            <style>
+                .no-scrollbar::-webkit-scrollbar {
+                    display: none;
+                }
+
+                .no-scrollbar {
+                    -ms-overflow-style: none;
+                    scrollbar-width: none;
+                }
+            </style>
+        @endif
         <!-- Grid Principal -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
@@ -104,17 +155,6 @@
             <!-- Columna Derecha - Sidebar -->
             <aside class="space-y-6">
 
-                <!-- Banner Vertical de Patrocinador -->
-                @if ($sponsors->where('status', 'active')->count() > 3)
-                    <div class="bg-white rounded-lg shadow-md p-4 sticky top-4">
-                        <p class="text-xs text-gray-500 text-center mb-2">PUBLICIDAD</p>
-                        <a href="{{ $sponsors->where('status', 'active')->skip(3)->first()->website }}" target="_blank">
-                            <img src="{{ $sponsors->where('status', 'active')->skip(3)->first()->logo }}"
-                                alt="Patrocinador" class="w-full h-auto object-contain hover:opacity-80 transition-opacity">
-                        </a>
-                    </div>
-                @endif
-
                 <!-- Últimas Noticias (Sidebar) -->
 
                 <div class="bg-white rounded-lg shadow-md p-6">
@@ -171,7 +211,7 @@
             <h2 class="text-2xl font-bold text-gray-800 border-l-4 border-red-600 pl-3">
                 Más Noticias
             </h2>
-            <span class="text-sm text-gray-500 italic">2 más recientes por categoría</span>
+            {{-- <span class="text-sm text-gray-500 italic">2 más recientes por categoría</span> --}}
         </div>
 
         {{-- Usamos grid-cols-4 para que se vea amplio en pantallas grandes --}}

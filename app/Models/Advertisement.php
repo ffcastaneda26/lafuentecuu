@@ -56,10 +56,12 @@ class Advertisement extends Model
     {
         return $query->where('active', true)
             ->where(function ($q) {
-                $q->whereNull('start_date')->orWhere('start_date', '<=', now());
+                $q->whereNull('start_date')
+                    ->orWhere('start_date', '<=', now()->startOfDay());
             })
             ->where(function ($q) {
-                $q->whereNull('end_date')->orWhere('end_date', '>=', now());
+                $q->whereNull('end_date')
+                    ->orWhere('end_date', '>=', now()->endOfDay());
             });
     }
 

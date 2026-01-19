@@ -10,19 +10,37 @@
         @if ($headerAds->isNotEmpty())
             <div class="relative group bg-gray-50 rounded-xl shadow-inner p-2 mb-6">
                 <div id="ad-slider"
-                    class="flex overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar gap-4 h-56 items-center px-4">
+                    class="flex overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar gap-4 h-44 items-center px-4">
                     @foreach ($headerAds as $ad)
                         <div class="ad-item flex-shrink-0 w-full md:w-1/2 lg:w-1/3 snap-center h-full">
                             <div
                                 class="relative h-full w-full bg-white rounded-lg overflow-hidden border border-gray-100 shadow-sm">
+
+                                {{-- Etiqueta de Patrocinador --}}
+                                @if (isset($ad->is_placeholder) && $ad->is_placeholder)
+                                    <div class="absolute top-2 right-2 z-10">
+                                        <span
+                                            class="bg-gray-800/80 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">
+                                            Patrocinador
+                                        </span>
+                                    </div>
+                                @endif
+
                                 <a href="{{ $ad->click_url }}" target="_blank" class="block h-full w-full">
-                                    @if ($ad->type === \App\Enums\AdvertisementTypeEnum::VIDEO->value)
+                                    @php
+                                        // Soporte para Enum de Advertisement o string de Placeholder
+                                        $isVideo =
+                                            (isset($ad->type->value) && $ad->type->value === 'video') ||
+                                            $ad->type === 'video';
+                                    @endphp
+
+                                    @if ($isVideo)
                                         <video class="w-full h-full object-cover" autoplay muted loop playsinline>
                                             <source src="{{ Storage::url($ad->media_url) }}" type="video/mp4">
                                         </video>
                                     @else
                                         <img src="{{ Storage::url($ad->media_url) }}" alt="{{ $ad->title }}"
-                                            class="w-full h-full object-contain p-2 transition-transform duration-500 hover:scale-105">
+                                            class="w-full h-full object-contain p-3 transition-transform duration-500 hover:scale-105">
                                     @endif
                                 </a>
                             </div>
@@ -32,14 +50,14 @@
 
                 <button onclick="scrollAds('left')"
                     class="absolute left-0 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-2 rounded-full shadow-md ml-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                     </svg>
                 </button>
 
                 <button onclick="scrollAds('right')"
                     class="absolute right-0 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-2 rounded-full shadow-md mr-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                     </svg>
                 </button>

@@ -16,18 +16,39 @@ class HomeController extends Controller
      */
     public function index()
     {
-        // 1. Mantenimiento: Desactivar anuncios cuya fecha final ya pasó
+        // 1. Mantenimiento: Desactivar anuncios caducados
         Advertisement::where('active', true)
             ->whereNotNull('end_date')
             ->where('end_date', '<', now()->startOfDay())
             ->update(['active' => false]);
 
-        // 2. Obtener Anuncios para el Slider (Posición Encabezado)
-        $headerAds = Advertisement::active() // Usa tu scope del modelo
+        // 2. Obtener Anuncios Reales para el encabezado
+        $realAds = Advertisement::active()
             ->where('position', AdvertisementPositionEnum::HEADER->value)
             ->orderBy('priority', 'asc')
-            ->select('id', 'title', 'position', 'click_url', 'media_url', 'type')
+            ->get(['id', 'title', 'click_url', 'media_url', 'type', 'sponsor_id']);
+
+        // 3. Obtener Patrocinadores activos que NO aparecen en los anuncios anteriores
+        // Esto asegura que si un patrocinador ya tiene un anuncio real, no se duplique con su logo básico.
+        $sponsorsWithoutAds = Sponsor::active()
+            ->whereDate('contract_start', '<=', now())
+            ->whereDate('contract_end', '>=', now())
+            ->whereNotIn('id', $realAds->pluck('sponsor_id'))
             ->get();
+
+        $placeholderAds = $sponsorsWithoutAds->map(function ($sponsor) {
+            return (object) [
+                'id' => null,
+                'title' => $sponsor->name,
+                'click_url' => $sponsor->website,
+                'media_url' => $sponsor->logo,
+                'type' => 'imagen',
+                'is_placeholder' => true // Etiqueta para identificarlo en la vista
+            ];
+        });
+
+        // 5. Unificar ambas colecciones para la vista
+        $headerAds = $realAds->concat($placeholderAds);
 
         // Obtener categorías activas ordenadas
         $categories = Category::active()

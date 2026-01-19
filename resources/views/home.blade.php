@@ -4,28 +4,15 @@
 
 @section('content')
     <div class="space-y-6">
-        {{-- <!-- Banner de Patrocinadores Principal (Horizontal) -->
-        @if ($sponsors->isNotEmpty())
-            <div class="bg-white rounded-lg shadow-sm p-4 overflow-hidden h-48">
-                <div class="flex items-center justify-center gap-6 overflow-x-auto">
-                    @foreach ($sponsors as $sponsor)
-                        <a href="{{ $sponsor->website }}" target="_blank" class="flex-shrink-0">
-                            <img src="{{ Storage::url($sponsor->logo) }}" alt="{{ $sponsor->name }}"
-                                class="h-44 p-2 object-contain hover:opacity-80 transition-opacity">
-                        </a>
-                    @endforeach
-                </div>
-            </div>
-        @endif --}}
+        <!-- Banner de Anuncios (Horizontal) -->
+
 
         @if ($headerAds->isNotEmpty())
             <div class="relative group bg-gray-50 rounded-xl shadow-inner p-2 mb-6">
-                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-2 ml-2">Publicidad Destacada</p>
-
                 <div id="ad-slider"
                     class="flex overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar gap-4 h-56 items-center px-4">
                     @foreach ($headerAds as $ad)
-                        <div class="flex-shrink-0 w-full md:w-1/2 lg:w-1/3 snap-center h-full">
+                        <div class="ad-item flex-shrink-0 w-full md:w-1/2 lg:w-1/3 snap-center h-full">
                             <div
                                 class="relative h-full w-full bg-white rounded-lg overflow-hidden border border-gray-100 shadow-sm">
                                 <a href="{{ $ad->click_url }}" target="_blank" class="block h-full w-full">
@@ -43,20 +30,75 @@
                     @endforeach
                 </div>
 
-                <button onclick="document.getElementById('ad-slider').scrollBy({left: -300, behavior: 'smooth'})"
-                    class="absolute left-0 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-2 rounded-full shadow-md ml-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button onclick="scrollAds('left')"
+                    class="absolute left-0 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-2 rounded-full shadow-md ml-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                     </svg>
                 </button>
 
-                <button onclick="document.getElementById('ad-slider').scrollBy({left: 300, behavior: 'smooth'})"
-                    class="absolute right-0 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-2 rounded-full shadow-md mr-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button onclick="scrollAds('right')"
+                    class="absolute right-0 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-2 rounded-full shadow-md mr-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                     </svg>
                 </button>
             </div>
+
+            <script>
+                const slider = document.getElementById('ad-slider');
+                let autoScrollTimer;
+
+                function scrollAds(direction) {
+                    // Reiniciar el temporizador al hacer clic manual
+                    resetAutoScroll();
+
+                    const scrollAmount = slider.offsetWidth / (window.innerWidth >= 1024 ? 3 : (window.innerWidth >= 768 ? 2 : 1));
+                    const maxScroll = slider.scrollWidth - slider.clientWidth;
+
+                    if (direction === 'right') {
+                        // Si estamos al final, volver al inicio
+                        if (slider.scrollLeft >= maxScroll - 10) {
+                            slider.scrollTo({
+                                left: 0,
+                                behavior: 'smooth'
+                            });
+                        } else {
+                            slider.scrollBy({
+                                left: scrollAmount,
+                                behavior: 'smooth'
+                            });
+                        }
+                    } else {
+                        // Si estamos al inicio, ir al final
+                        if (slider.scrollLeft <= 10) {
+                            slider.scrollTo({
+                                left: maxScroll,
+                                behavior: 'smooth'
+                            });
+                        } else {
+                            slider.scrollBy({
+                                left: -scrollAmount,
+                                behavior: 'smooth'
+                            });
+                        }
+                    }
+                }
+
+                function startAutoScroll() {
+                    autoScrollTimer = setInterval(() => {
+                        scrollAds('right');
+                    }, 3000); // 10 segundos
+                }
+
+                function resetAutoScroll() {
+                    clearInterval(autoScrollTimer);
+                    startAutoScroll();
+                }
+
+                // Iniciar al cargar
+                document.addEventListener('DOMContentLoaded', startAutoScroll);
+            </script>
 
             <style>
                 .no-scrollbar::-webkit-scrollbar {

@@ -3,11 +3,12 @@
 namespace App\Filament\Resources\News\Tables;
 
 use Filament\Actions\EditAction;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Filament\Tables\Filters\Filter;
+use Illuminate\Database\Eloquent\Builder;
 
 class NewsTable
 {
@@ -74,7 +75,18 @@ class NewsTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                Filter::make('solo_con_orden')
+                    ->label('Solo con Orden')
+                    ->toggle()
+                    ->query(fn(Builder $query) => $query->where('sort_order', '>', 0)),
+                Filter::make('more_news')
+                    ->label('¿En Más Noticias?')
+                    ->toggle()
+                    ->query(fn(Builder $query) => $query->where('is_more_news', true)),
+                Filter::make('more_viewed')
+                    ->label('¿En Más Vistas?')
+                    ->toggle()
+                    ->query(fn(Builder $query) => $query->where('is_most_viewed', true))
             ])
             ->recordActions([
                 EditAction::make(),

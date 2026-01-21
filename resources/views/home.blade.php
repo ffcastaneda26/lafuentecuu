@@ -16,16 +16,6 @@
                             <div
                                 class="relative h-full w-full bg-white rounded-lg overflow-hidden border border-gray-100 shadow-sm">
 
-                                {{-- Etiqueta de Patrocinador --}}
-                                @if (isset($ad->is_placeholder) && $ad->is_placeholder)
-                                    <div class="absolute top-2 right-2 z-10">
-                                        <span
-                                            class="bg-gray-800/80 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">
-                                            Patrocinador
-                                        </span>
-                                    </div>
-                                @endif
-
                                 <a href="{{ $ad->click_url }}" target="_blank" class="block h-full w-full">
                                     @php
                                         // Soporte para Enum de Advertisement o string de Placeholder

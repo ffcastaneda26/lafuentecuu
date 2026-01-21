@@ -38,6 +38,9 @@ class News extends Model
     ];
 
 
+    /**
+     * Acciones al crear/actualizar/eliminar modelo
+     */
     protected static function boot()
     {
         parent::boot();
@@ -48,54 +51,29 @@ class News extends Model
             }
         });
 
-        // Nueva lógica de reclasificación
+        // Sustituir el orden en lugar de desplazar
         static::saving(function ($news) {
-            // 1. Solo actuamos si el sort_order ha cambiado
             if ($news->isDirty('sort_order')) {
-                $oldOrder = $news->getOriginal('sort_order');
                 $newOrder = $news->sort_order;
 
-                // Caso A: Si el usuario asigna un orden entre 1 y 5
                 if ($newOrder >= 1 && $newOrder <= 5) {
-                    // Desplazamos las que están en el camino para no perder ninguna
-                    self::where('sort_order', '>=', $newOrder)
+                    self::where('sort_order', $newOrder)
                         ->where('id', '!=', $news->id)
-                        ->increment('sort_order');
+                        ->update(['sort_order' => 0]);
                 }
-
-                // Caso B: Si estamos moviendo una que ya tenía orden (ej. de 3 a 5)
-                // O si simplemente queremos asegurar que no queden huecos después de cualquier cambio
             }
         });
 
+        // Opcional: Limpieza en 'saved' para asegurar que no existan duplicados por error
         static::saved(function ($news) {
-            // IMPORTANTE: Usamos 'saved' (después de guardar) para re-normalizar la lista
-            if ($news->isDirty('sort_order')) {
-                // 1. Obtenemos todas las noticias que tienen algún orden (del 1 en adelante)
-                $allOrdered = self::where('sort_order', '>', 0)
-                    ->orderBy('sort_order', 'asc')
-                    ->orderBy('updated_at', 'desc') // En caso de empate, la más reciente manda
-                    ->get();
-
-                // 2. Re-asignamos los números estrictamente del 1 al 5
-                foreach ($allOrdered as $index => $item) {
-                    $correctOrder = $index + 1;
-
-                    if ($correctOrder > 5) {
-                        // Si se pasa de 5, vuelve a ser 0
-                        if ($item->sort_order !== 0) {
-                            $item->updateQuietly(['sort_order' => 0]);
-                        }
-                    } else {
-                        // Si el orden no es el correcto (ej. hay un hueco), lo corregimos
-                        if ($item->sort_order !== $correctOrder) {
-                            $item->updateQuietly(['sort_order' => $correctOrder]);
-                        }
-                    }
-                }
+            if ($news->isDirty('sort_order') && $news->sort_order > 0) {
+                self::where('sort_order', $news->sort_order)
+                    ->where('id', '!=', $news->id)
+                    ->update(['sort_order' => 0]);
             }
         });
 
+        // Borra la imagen destacada al eliminar la noticia
         static::deleted(function ($model) {
             if ($model->featured_image) {
                 Storage::disk('public')->delete($model->featured_image);

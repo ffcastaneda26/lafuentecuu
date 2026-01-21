@@ -70,14 +70,15 @@ class HomeController extends Controller
             ->get()
             ->groupBy('category_id') // Agrupamos por categoría
             ->map(function ($categoryGroup) {
-                return $categoryGroup->take(2); // Tomamos solo las 2 más recientes de ese grupo
+                return $categoryGroup->take(1); // Tomamos solo la noticia mas  recientes de ese grupo
             })
             ->flatten();
         $mostViewedNews = News::published()
             ->with(['category', 'user', 'images', 'videos'])
             ->where('is_most_viewed', true)
+            ->orderby('published_at', 'desc')
             ->orderBy('views_count', 'desc')
-            ->take(8) // Por ejemplo, las 4 más recientes marcadas
+            ->take(5)
             ->get();
 
         // Obtener noticias publicadas con sus relaciones

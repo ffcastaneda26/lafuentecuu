@@ -163,9 +163,9 @@
                                     <div class="flex items-center gap-4 mt-3 text-gray-300 text-xs">
                                         <span><i
                                                 class="far fa-clock mr-1"></i>{{ $featuredNews->published_at->diffForHumans() }}</span>
-                                        <span><i
+                                        {{-- <span><i
                                                 class="far fa-eye mr-1"></i>{{ number_format($featuredNews->views_count) }}
-                                            vistas</span>
+                                            vistas</span> --}}
                                     </div>
                                 </div>
                             </div>
@@ -200,8 +200,9 @@
                                         <div class="flex items-center gap-3 text-gray-500 text-xs">
                                             <span><i
                                                     class="far fa-clock mr-1"></i>{{ $newsItem->published_at->diffForHumans() }}</span>
-                                            <span><i
-                                                    class="far fa-eye mr-1"></i>{{ number_format($newsItem->views_count) }}</span>
+                                            {{-- <span><i
+                                                    class="far fa-eye mr-1"></i>{{ number_format($newsItem->views_count) }}
+                                            </span> --}}
                                         </div>
                                     </div>
                                 </a>
@@ -244,11 +245,11 @@
                                                 <i class="far fa-calendar-alt"></i>
                                                 {{ $item->published_at->diffForHumans() }}
                                             </span>
-                                            <span
+                                            {{-- <span
                                                 class="flex items-center gap-1 bg-blue-50 text-blue-700 px-2 py-1 rounded-full">
                                                 <i class="fas fa-fire"></i>
                                                 {{ number_format($item->views_count) }} visitas
-                                            </span>
+                                            </span> --}}
                                         </div>
                                     </div>
                                 </a>
@@ -294,7 +295,7 @@
                             </h3>
                             <div class="flex justify-between items-center text-[10px] text-gray-400 uppercase">
                                 <span>{{ $item->published_at->format('d M, Y') }}</span>
-                                <span><i class="far fa-eye"></i> {{ $item->views_count }}</span>
+                                {{-- <span><i class="far fa-eye"></i> {{ $item->views_count }}</span> --}}
                             </div>
                         </div>
                     </a>

@@ -75,10 +75,7 @@ class NewsTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Filter::make('solo_con_orden')
-                    ->label('Solo con Orden')
-                    ->toggle()
-                    ->query(fn(Builder $query) => $query->where('sort_order', '>', 0)),
+
                 Filter::make('more_news')
                     ->label('¿En Más Noticias?')
                     ->toggle()

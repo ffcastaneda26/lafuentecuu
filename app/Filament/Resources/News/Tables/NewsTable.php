@@ -31,6 +31,10 @@ class NewsTable
                     ->label('Estado')
                     ->badge()
                     ->color(fn($record) => $record->status_color),
+                TextColumn::make('views_count')
+                    ->label('Vistas')
+                    ->sortable()
+                    ->searchable(),
 
                 // IconColumn::make('featured')
                 //     ->label('¿Destacada?')

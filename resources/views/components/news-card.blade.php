@@ -60,8 +60,7 @@
                         @if ($showMeta)
                             <div class="flex items-center gap-4 text-gray-300 text-xs">
                                 <span><i class="far fa-clock mr-1"></i>{{ $news->published_at->diffForHumans() }}</span>
-                                <span><i class="far fa-eye mr-1"></i>{{ number_format($news->views_count) }}
-                                    vistas</span>
+
                             </div>
                         @endif
                     </div>
@@ -107,9 +106,7 @@
                     <div
                         class="flex items-center gap-3 text-gray-500 text-xs {{ $variant === 'horizontal' ? 'mt-2' : '' }}">
                         <span><i class="far fa-clock mr-1"></i>{{ $news->published_at->diffForHumans() }}</span>
-                        @if ($variant !== 'horizontal')
-                            <span><i class="far fa-eye mr-1"></i>{{ number_format($news->views_count) }}</span>
-                        @endif
+
                     </div>
                 @endif
             </div>

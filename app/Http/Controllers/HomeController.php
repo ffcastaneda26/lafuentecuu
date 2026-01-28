@@ -8,61 +8,39 @@ use App\Models\Category;
 use App\Models\ContactInfo;
 use App\Models\News;
 use App\Models\Sponsor;
-
+use App\Services\NewsService;
 use Illuminate\Support\Collection;
 
 class HomeController extends Controller
 {
+    protected $newsService;
+
+    public function __construct(NewsService $newsService)
+    {
+        $this->newsService = $newsService;
+    }
+
     /**
      * Muestra la página principal del portal de noticias
      */
     public function index()
     {
+        $featuredNews = $this->newsService->getFeatured();
+        $moreNews = $this->newsService->getMoreNews(
+            excludeIds: $featuredNews->pluck('id')
+        );
+        $mostViewedNews = $this->newsService->getMostViewed(5);
+        $news = $this->newsService->getRecent(20);
 
-        $headerAds = $this->getAvailableAds();
-        $categories = $this->getActiveCategories();
+        $categories = Category::active()->ordered()->get();
         $contactInfo = ContactInfo::first() ?? new ContactInfo;
 
-        $featuredNews = News::withStandardRelations()
-            ->inMainOrder()
-            ->get();
-        $moreNews = Category::active()
-            ->with(['news' => function ($query) use ($featuredNews) {
-                $query->published()
-                    ->where('is_more_news', true)
-                    ->whereNotIn('id', $featuredNews->pluck('id'))
-                    ->latest('published_at')
-                    ->take(1); // La base de datos solo entrega UNA por categoría
-            }])
-            ->get()
-            ->pluck('news') // Extraemos las colecciones de noticias
-            ->flatten();
-
-        $mostViewedNews = News::withStandardRelations()
-            ->where('is_most_viewed', true)
-            ->latest('published_at')
-            ->orderBy('views_count', 'desc')
-            ->take(5)
-            ->get();
-
-        $news = News::withStandardRelations()
-            ->orderByRaw('CASE WHEN sort_order > 0 THEN 0 ELSE 1 END')
-            ->orderBy('sort_order', 'asc')
-            ->orderBy('featured', 'desc')
-            ->latest('published_at')
-            ->take(20)
-            ->get();
-        // --------------------------
-
-
-
         return view('home', compact(
-            'headerAds',
-            'categories',
             'featuredNews',
             'moreNews',
-            'news',
             'mostViewedNews',
+            'news',
+            'categories',
             'contactInfo'
         ));
     }

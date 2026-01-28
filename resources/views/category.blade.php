@@ -20,19 +20,7 @@
             </div>
         </div>
 
-        <!-- Banner de Patrocinadores -->
-        @if ($sponsors->isNotEmpty())
-            <div class="bg-white rounded-lg shadow-sm p-4">
-                <div class="flex items-center justify-center gap-6 overflow-x-auto">
-                    @foreach ($sponsors->take(3) as $sponsor)
-                        <a href="{{ $sponsor->website }}" target="_blank" class="flex-shrink-0">
-                            <img src="{{ Storage::url($sponsor->logo) }}" alt="{{ $sponsor->name }}"
-                                class="h-20 object-contain hover:opacity-80 transition-opacity">
-                        </a>
-                    @endforeach
-                </div>
-            </div>
-        @endif
+        @livewire('ad-slider')
 
         <!-- Grid de Noticias -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -61,33 +49,6 @@
 
             <!-- Sidebar -->
             <aside class="space-y-6">
-
-                <!-- Banner Vertical -->
-                @if ($sponsors->count() > 3)
-                    <div class="bg-white rounded-lg shadow-md p-4 sticky top-4">
-                        <p class="text-xs text-gray-500 text-center mb-2">PUBLICIDAD</p>
-                        <a href="{{ $sponsors->skip(3)->first()->website }}" target="_blank">
-                            <img src="{{ Storage::url($sponsors->skip(3)->first()->logo) }}" alt="Patrocinador"
-                                class="w-full h-auto object-contain hover:opacity-80 transition-opacity">
-                        </a>
-                    </div>
-                @endif
-
-                <!-- Otras Categorías -->
-                {{-- <div class="bg-white rounded-lg shadow-md p-6">
-                    <h3 class="text-xl font-bold mb-4 pb-2 border-b-2 border-red-600">Otras Secciones</h3>
-                    <div class="space-y-2">
-                        @foreach ($categories->where('id', '!=', $category->id) as $otherCategory)
-                            <a href="/{{ $otherCategory->slug }}"
-                                class="flex items-center justify-between py-2 px-3 rounded hover:bg-gray-100 transition-colors group">
-                                <span class="font-medium text-gray-700 group-hover:text-red-600">
-                                    {{ $otherCategory->name }}
-                                </span>
-                                <i class="fas fa-chevron-right text-gray-400 group-hover:text-red-600"></i>
-                            </a>
-                        @endforeach
-                    </div>
-                </div> --}}
 
                 <!-- Últimas Noticias Globales -->
                 <div class="bg-white rounded-lg shadow-md p-6">

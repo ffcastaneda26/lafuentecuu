@@ -119,4 +119,18 @@ class News extends Model
             ->orderBy('published_at', 'desc')
             ->limit($limit);
     }
+
+
+    public function scopeInMainOrder($query)
+    {
+        return $query->published()
+            ->whereBetween('sort_order', [1, 5])
+            ->orderBy('sort_order', 'asc');
+    }
+
+    // Scope para traer siempre las relaciones comunes y evitar el problema N+1
+    public function scopeWithStandardRelations($query)
+    {
+        return $query->with(['category', 'user', 'images', 'videos']);
+    }
 }

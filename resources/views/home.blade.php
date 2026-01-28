@@ -6,9 +6,10 @@
     <div class="space-y-6">
         <!-- Banner de Anuncios (Horizontal) -->
 
-
+        {{--
         @if ($headerAds->isNotEmpty())
             <div class="relative group bg-gray-50 rounded-xl shadow-inner p-2 mb-6">
+
                 <div id="ad-slider"
                     class="flex overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar gap-4 h-44 items-center px-4">
                     @foreach ($headerAds as $ad)
@@ -118,7 +119,9 @@
                     scrollbar-width: none;
                 }
             </style>
-        @endif
+        @endif --}}
+        @livewire('ad-slider')
+
         <!-- Grid Principal -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
@@ -129,8 +132,7 @@
                     <article class="bg-white rounded-lg shadow-md overflow-hidden group cursor-pointer">
                         <a href="/noticia/{{ $featuredNews->slug }}">
                             <div class="relative overflow-hidden h-96">
-                                <img src="{{ Storage::url($featuredNews->featured_image) }}"
-                                    alt="{{ $featuredNews->title }}"
+                                <img src="{{ Storage::url($featuredNews->featured_image) }}" alt="{{ $featuredNews->title }}"
                                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                                 <div
                                     class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black/70 to-transparent p-6">

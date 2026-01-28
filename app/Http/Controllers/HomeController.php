@@ -9,6 +9,8 @@ use App\Models\ContactInfo;
 use App\Models\News;
 use App\Models\Sponsor;
 
+use Illuminate\Support\Collection;
+
 class HomeController extends Controller
 {
     /**
@@ -16,86 +18,46 @@ class HomeController extends Controller
      */
     public function index()
     {
-        // 1. Mantenimiento: Desactivar anuncios caducados
-        Advertisement::where('active', true)
-            ->whereNotNull('end_date')
-            ->where('end_date', '<', now()->startOfDay())
-            ->update(['active' => false]);
 
-        // 2. Obtener Anuncios Reales para el encabezado
-        $realAds = Advertisement::active()
-            ->where('position', AdvertisementPositionEnum::HEADER->value)
-            ->orderBy('priority', 'asc')
-            ->get(['id', 'title', 'click_url', 'media_url', 'type', 'sponsor_id']);
+        $headerAds = $this->getAvailableAds();
+        $categories = $this->getActiveCategories();
+        $contactInfo = ContactInfo::first() ?? new ContactInfo;
 
-        // 3. Obtener Patrocinadores activos que NO aparecen en los anuncios anteriores
-        // Esto asegura que si un patrocinador ya tiene un anuncio real, no se duplique con su logo básico.
-        $sponsorsWithoutAds = Sponsor::active()
-            ->whereDate('contract_start', '<=', now())
-            ->whereDate('contract_end', '>=', now())
-            ->whereNotIn('id', $realAds->pluck('sponsor_id'))
+        $featuredNews = News::withStandardRelations()
+            ->inMainOrder()
             ->get();
-
-        $placeholderAds = $sponsorsWithoutAds->map(function ($sponsor) {
-            return (object) [
-                'id' => null,
-                'title' => $sponsor->name,
-                'click_url' => $sponsor->website,
-                'media_url' => $sponsor->logo,
-                'type' => 'imagen',
-                'is_placeholder' => true // Etiqueta para identificarlo en la vista
-            ];
-        });
-
-        // 5. Unificar ambas colecciones para la vista
-        $headerAds = $realAds->concat($placeholderAds);
-
-        // Obtener categorías activas ordenadas
-        $categories = Category::active()
-            ->ordered()
-            ->get();
-        // 1. Top 5 Ordenado (Cabecera)
-        $featuredNews = News::published()
-            ->whereBetween('sort_order', [1, 5])
-            ->orderBy('sort_order', 'asc')
-            ->with(['category', 'user', 'images', 'videos'])
-            ->get();
-        // 2. Obtener "Más Noticias": 2 más recientes por categoría
-        // Filtramos en la base de datos y luego limitamos con PHP para mayor precisión
-        $moreNews = News::published()
-            ->where('is_more_news', true)
-            ->whereNotIn('id', $featuredNews->pluck('id'))
-            ->orderBy('published_at', 'desc')
-            ->orderBy('category_id')
+        $moreNews = Category::active()
+            ->with(['news' => function ($query) use ($featuredNews) {
+                $query->published()
+                    ->where('is_more_news', true)
+                    ->whereNotIn('id', $featuredNews->pluck('id'))
+                    ->latest('published_at')
+                    ->take(1); // La base de datos solo entrega UNA por categoría
+            }])
             ->get()
-            ->groupBy('category_id') // Agrupamos por categoría
-            ->map(function ($categoryGroup) {
-                return $categoryGroup->take(1); // Tomamos solo la noticia mas  recientes de ese grupo
-            })
+            ->pluck('news') // Extraemos las colecciones de noticias
             ->flatten();
-        $mostViewedNews = News::published()
-            ->with(['category', 'user', 'images', 'videos'])
+
+        $mostViewedNews = News::withStandardRelations()
             ->where('is_most_viewed', true)
-            ->orderby('published_at', 'desc')
+            ->latest('published_at')
             ->orderBy('views_count', 'desc')
             ->take(5)
             ->get();
 
-        // Obtener noticias publicadas con sus relaciones
-        $news = News::published()
-            ->with(['category', 'user', 'images', 'videos'])
-            ->orderByRaw('CASE WHEN sort_order > 0 THEN 0 ELSE 1 END') // Primero las que tienen orden
-            ->orderBy('sort_order', 'asc') // 1, 2, 3...
-            ->orderBy('featured', 'desc')  // Luego las destacadas genéricas
-            ->orderBy('published_at', 'desc') // Finalmente por fecha
+        $news = News::withStandardRelations()
+            ->orderByRaw('CASE WHEN sort_order > 0 THEN 0 ELSE 1 END')
+            ->orderBy('sort_order', 'asc')
+            ->orderBy('featured', 'desc')
+            ->latest('published_at')
             ->take(20)
             ->get();
+        // --------------------------
 
-        // Obtener información de contacto
-        $contactInfo = ContactInfo::first() ?? new ContactInfo;
+
 
         return view('home', compact(
-            'headerAds', // Pasamos los anuncios en lugar de sponsors
+            'headerAds',
             'categories',
             'featuredNews',
             'moreNews',
@@ -110,35 +72,27 @@ class HomeController extends Controller
      */
     public function category($slug)
     {
+
         $category = Category::where('slug', $slug)
             ->where('is_active', true)
             ->firstOrFail();
 
-        $categories = Category::active()
-            ->ordered()
-            ->get();
+        $categoryAds = $this->getAvailableAds();
+        $categories = $this->getActiveCategories();
 
-        // Obtener noticias de esta categoría
         $news = News::published()
             ->where('category_id', $category->id)
-            ->with(['category', 'user', 'images', 'videos'])
+            ->withStandardRelations() // Reutilizamos relaciones
             ->orderBy('published_at', 'desc')
             ->paginate(12);
 
-        $sponsors = Sponsor::active()
-            ->whereDate('contract_start', '<=', now())
-            ->whereDate('contract_end', '>=', now())
-            ->inRandomOrder()
-            ->with('advertisements')
-            ->get();
-
-        $contactInfo = ContactInfo::first() ?? new ContactInfo;
+        $contactInfo = $this->getContactInfo();
 
         return view('category', compact(
             'category',
+            'categoryAds',
             'categories',
             'news',
-            'sponsors',
             'contactInfo'
         ));
     }
@@ -166,13 +120,7 @@ class HomeController extends Controller
             ->take(4)
             ->get();
 
-        $sponsors = Sponsor::active()
-            ->whereDate('contract_start', '<=', now())
-            ->whereDate('contract_end', '>=', now())
-            ->inRandomOrder()
-            ->with('advertisements')
-            ->take(2)
-            ->get();
+
 
         $contactInfo = ContactInfo::first() ?? new ContactInfo;
 
@@ -180,8 +128,34 @@ class HomeController extends Controller
             'news',
             'categories',
             'relatedNews',
-            'sponsors',
             'contactInfo'
         ));
+    }
+
+    private function getAvailableAds(): Collection
+    {
+        // Actualiza anunicos que ya no están activos
+        Advertisement::where('active', true)
+            ->whereNotNull('end_date')
+            ->where('end_date', '<', now()->startOfDay())
+            ->update(['active' => false]);
+
+        //  Regresa los anuncios disponibles para la cabecera
+        return Advertisement::active()
+            ->where('position', AdvertisementPositionEnum::HEADER->value)
+            ->orderBy('priority', 'asc')
+            ->get(['id', 'title', 'click_url', 'media_url', 'type', 'sponsor_id']);
+    }
+
+    private function getActiveCategories(): Collection
+    {
+        return Category::active()
+            ->ordered()
+            ->get();
+    }
+
+    private function getContactInfo(): ContactInfo
+    {
+        return ContactInfo::first() ?? new ContactInfo;
     }
 }
